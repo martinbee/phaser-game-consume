@@ -9,29 +9,33 @@ export default {
       game: {
         width,
         height,
+        stage,
       },
       highestScore,
     } = this;
     const centerWidth = width / 2;
     const centerHeight = height / 2;
 
-    //show the space tile, repeated
-    this.background = add.tileSprite(0, 0, width, height, 'space');
+    // set background to white
+    stage.backgroundColor = '#fff';
 
-    //give it speed in x
-    this.background.autoScroll(-20, 0);
+    // write title menu text
+    const titleText = 'CONSUME!';
+    const titleStyle = { font: '30px Arial', fill: '#000', align: 'center' };
+    const titleContent = add.text(centerWidth, centerHeight - 30, titleText, titleStyle);
+    titleContent.anchor.set(0.5);
 
     // write main menu text
     const mainText = 'Tap to begin';
-    const mainStyle = { font: '30px Arial', fill: '#fff', align: 'center' };
-    const mainContent = add.text(centerWidth, centerHeight, mainText, mainStyle);
+    const mainStyle = { font: '20px Arial', fill: '#000', align: 'center' };
+    const mainContent = add.text(centerWidth, centerHeight + 30, mainText, mainStyle);
     mainContent.anchor.set(0.5);
 
     // write highest score
     const highestScoreText = `Highest score: ${highestScore}`;
-    const highestScoreStyle = { font: '15px Arial', fill: '#fff', align: 'center' };
+    const highestScoreStyle = { font: '10px Arial', fill: '#000', align: 'center' };
     const highestScoreContent = (
-      add.text(centerWidth, centerHeight + 50, highestScoreText, highestScoreStyle)
+      add.text(centerWidth, centerHeight + 70, highestScoreText, highestScoreStyle)
     );
     highestScoreContent.anchor.set(0.5);
   },

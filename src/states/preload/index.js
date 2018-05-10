@@ -13,6 +13,7 @@ export default {
 
     const { centerX, centerY } = game.world;
 
+    game.stage.backgroundColor = '#fff';
     // load logo
     this.splash = add.sprite(centerX, centerY - 20, 'logo');
     this.splash.anchor.setTo(0.5);
@@ -25,10 +26,9 @@ export default {
     load.setPreloadSprite(this.preloadBar);
 
     // load all other game assets (sounds, sprites, images, etc.)
-    load.image('space', 'assets/images/space.png');
-    load.image('rock', 'assets/images/rock.png');
-    load.spritesheet('playerShip', 'assets/images/player.png', 12, 12);
-    load.spritesheet('power', 'assets/images/power.png', 12, 12);
+    load.image('player', 'assets/images/player.png');
+    load.image('enemy', 'assets/images/enemy.png');
+    load.image('food', 'assets/images/food.png');
     load.image('playerParticle', 'assets/images/player-particle.png');
 
     load.audio('collect', 'assets/audio/collect.ogg');

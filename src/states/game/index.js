@@ -3,16 +3,10 @@ import Phaser from 'phaser';
 
 export default {
   create() {
-    this.background = this.game.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'space');
-
     // player
-    this.player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'playerShip');
+    this.player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'player');
     this.player.anchor.setTo(0.5);
-    this.player.scale.setTo(2);
-
-    // player animations
-    this.player.animations.add('fly', [0, 1, 2, 3], 5, true);
-    this.player.animations.play('fly');
+    this.player.scale.setTo(0.5);
 
     // player initial score
     this.playerScore = 0;
@@ -25,9 +19,9 @@ export default {
     // camera
     this.game.camera.follow(this.player);
 
-    // generate obstables and collectibles
-    this.generateAsteriods();
-    this.generateCollectibles();
+    // generate obstables and food
+    this.generateEnemies();
+    this.generateFood();
 
     // audio
     this.explosionSound = this.game.add.audio('explosion');
@@ -44,11 +38,11 @@ export default {
       this.game.physics.arcade.moveToPointer(this.player, this.playerSpeed);
     }
 
-    //collision between player and asteroids
-    this.game.physics.arcade.collide(this.player, this.asteroids, this.hitAsteroid, null, this);
+    //collision between player and enemies
+    this.game.physics.arcade.collide(this.player, this.enemies, this.hitEnemy, null, this);
 
-    //overlapping between player and collectibles (overlap does not affect player physics)
-    this.game.physics.arcade.overlap(this.player, this.collectibles, this.collect, null, this);
+    //overlapping between player and food (overlap does not affect player physics)
+    this.game.physics.arcade.overlap(this.player, this.food, this.collect, null, this);
   },
 
   // handle end state by restarting to menu
@@ -58,30 +52,30 @@ export default {
   },
 
   // utility methods below
-  generateAsteriods() {
-    this.asteroids = this.game.add.group();
+  generateEnemies() {
+    this.enemies = this.game.add.group();
 
-    // enable physics in asteroids
-    this.asteroids.enableBody = true;
-    this.asteroids.physicsBodyType = Phaser.Physics.ARCADE;
+    // enable physics in enemies
+    this.enemies.enableBody = true;
+    this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
     // phaser's random number generator
-    const numAsteroids = this.game.rnd.integerInRange(10, 20);
-    let asteriod;
+    const numEnemies = this.game.rnd.integerInRange(10, 20);
+    let enemy;
 
-    for (let i = 0; i < numAsteroids; i += 1) {
+    for (let i = 0; i < numEnemies; i += 1) {
       // add sprite
-      asteriod = this.asteroids.create(this.game.world.randomX, this.game.world.randomY, 'rock');
-      asteriod.scale.setTo(this.game.rnd.integerInRange(10, 40) / 10);
+      enemy = this.enemies.create(this.game.world.randomX, this.game.world.randomY, 'enemy');
+      enemy.scale.setTo(this.game.rnd.integerInRange(1, 4) / 10);
 
       // physics properties
-      asteriod.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
-      asteriod.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
-      asteriod.body.immovable = true;
-      asteriod.body.collideWorldBounds = true;
+      enemy.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
+      enemy.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
+      enemy.body.immovable = true;
+      enemy.body.collideWorldBounds = true;
     }
   },
-  hitAsteroid() {
+  hitEnemy() {
     //play explosion sound
     this.explosionSound.play();
 
@@ -95,29 +89,30 @@ export default {
 
     this.player.kill();
 
+    // end game after a brief period
     this.game.time.events.add(800, this.gameOver, this);
   },
 
-  // collectibles
-  generateCollectibles() {
-    this.collectibles = this.game.add.group();
+  // food
+  generateFood() {
+    this.food = this.game.add.group();
 
     //enable physics in them
-    this.collectibles.enableBody = true;
-    this.collectibles.physicsBodyType = Phaser.Physics.ARCADE;
+    this.food.enableBody = true;
+    this.food.physicsBodyType = Phaser.Physics.ARCADE;
 
     //phaser's random number generator
-    const numCollectibles = this.game.rnd.integerInRange(5, 10);
-    let collectible;
+    const numFood = this.game.rnd.integerInRange(5, 10);
+    let food;
 
-    for (let i = 0; i < numCollectibles; i += 1) {
+    for (let i = 0; i < numFood; i += 1) {
       //add sprite
-      collectible = this.collectibles.create(this.game.world.randomX, this.game.world.randomY, 'power');
-      collectible.animations.add('fly', [0, 1, 2, 3], 5, true);
-      collectible.animations.play('fly');
+      food = this.food.create(this.game.world.randomX, this.game.world.randomY, 'food');
+      food.scale.setTo(0.5);
     }
   },
-  collect(player, collectible) {
+
+  collect(player, food) {
     //play collect sound
     this.collectSound.play();
 
@@ -126,7 +121,7 @@ export default {
     this.scoreLabel.text = this.playerScore;
 
     //remove sprite
-    collectible.kill();
+    food.kill();
   },
 
   // score

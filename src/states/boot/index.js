@@ -7,6 +7,7 @@ import Phaser from 'phaser';
 export default {
   preload() {
     // load assets for preload state
+    // replace with my logo
     this.load.image('logo', 'assets/images/logo.png');
     this.load.image('preloadBar', 'assets/images/preload-bar.png');
   },
