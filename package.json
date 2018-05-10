@@ -1,7 +1,7 @@
 {
-  "name": "slim-phaser",
+  "name": "Consume",
   "version": "1.0.0",
-  "description": "Slim phaser webpack boilerplate",
+  "description": "Simple consume and grow game",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
