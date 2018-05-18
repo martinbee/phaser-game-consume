@@ -65,15 +65,41 @@ export default {
 
     for (let i = 0; i < numEnemies; i += 1) {
       // add sprite
-      enemy = this.enemies.create(this.game.world.randomX, this.game.world.randomY, 'enemy');
+      const { x, y } = this.getRandomOutsideBoundsSpawnPoints();
+      console.log(x, y);
+      enemy = this.enemies.create(x, y, 'enemy');
       enemy.scale.setTo(this.game.rnd.integerInRange(1, 4) / 10);
 
       // physics properties
       enemy.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
       enemy.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
       enemy.body.immovable = true;
-      enemy.body.collideWorldBounds = true;
     }
+  },
+  getRandomOutsideBoundsSpawnPoints() {
+    const sideToSpawnOn = this.game.rnd.integerInRange(0, 3);
+    const offset = this.game.rnd.integerInRange(50, 100);
+
+    let x = this.game.world.randomX;
+    let y = this.game.world.randomY;
+
+    switch (sideToSpawnOn) {
+      case 0:
+        y = 0 - offset;
+        break;
+      case 1:
+        x = this.game.world.bounds.width + offset;
+        break;
+      case 2:
+        y = this.game.world.bounds.height + offset;
+        break;
+      case 3:
+      default:
+        x = 0 - offset;
+        break;
+    }
+
+    return { x, y };
   },
   hitEnemy() {
     //play explosion sound

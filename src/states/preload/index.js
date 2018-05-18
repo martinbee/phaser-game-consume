@@ -13,7 +13,7 @@ export default {
 
     const { centerX, centerY } = game.world;
 
-    game.stage.backgroundColor = '#fff';
+    game.stage.backgroundColor = '#000';
     // load logo
     this.splash = add.sprite(centerX, centerY - 20, 'logo');
     this.splash.anchor.setTo(0.5);
