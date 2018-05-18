@@ -7,6 +7,7 @@ export default {
     this.player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'player');
     this.player.anchor.setTo(0.5);
     this.player.scale.setTo(0.5);
+    this.player.growthCharges = [];
 
     // player initial score
     this.playerScore = 0;
@@ -43,6 +44,9 @@ export default {
 
     //overlapping between player and food (overlap does not affect player physics)
     this.game.physics.arcade.overlap(this.player, this.food, this.collect, null, this);
+    this.killAndRecycleOutOfBoundEnemies();
+
+    if (this.player.growthCharges.length) this.grow();
   },
 
   // handle end state by restarting to menu
@@ -60,7 +64,8 @@ export default {
     this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
     // phaser's random number generator
-    const numEnemies = this.game.rnd.integerInRange(10, 20);
+    //const numEnemies = this.game.rnd.integerInRange(10, 20);
+    const numEnemies = 1;
     let enemy;
 
     for (let i = 0; i < numEnemies; i += 1) {
@@ -134,6 +139,19 @@ export default {
     // end game after a brief period
     this.game.time.events.add(800, this.gameOver, this);
   },
+  killAndRecycleOutOfBoundEnemies() {
+    //this.enemies.children.forEach((child) => {
+      //const { x, y } = child.position;
+
+      //const isOutOfXBounds = (x > this.game.world.width + 101) || x < -101;
+      //const isOutOfYBounds = (y > this.game.world.height + 101) || y < -101;
+      //const isOutOfBounds = isOutOfXBounds || isOutOfYBounds;
+
+      //if (isOutOfBounds) {
+        //child.kill();
+      //}
+    //});
+  },
 
   // food
   generateFood() {
@@ -164,6 +182,16 @@ export default {
 
     //remove sprite
     food.kill();
+    this.player.growthCharges.push(1);
+  },
+
+  grow() {
+    this.player.growthCharges.forEach((charge) => {
+      // grow player
+      console.log('grow');
+    });
+
+    this.player.growthCharges = [];
   },
 
   // score
