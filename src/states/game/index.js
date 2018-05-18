@@ -65,41 +65,57 @@ export default {
 
     for (let i = 0; i < numEnemies; i += 1) {
       // add sprite
-      const { x, y } = this.getRandomOutsideBoundsSpawnPoints();
-      console.log(x, y);
+      const {
+        x,
+        y,
+        velocityX,
+        velocityY,
+      } = this.getInitialSpawnData();
+
       enemy = this.enemies.create(x, y, 'enemy');
       enemy.scale.setTo(this.game.rnd.integerInRange(1, 4) / 10);
 
       // physics properties
-      enemy.body.velocity.x = this.game.rnd.integerInRange(-20, 20);
-      enemy.body.velocity.y = this.game.rnd.integerInRange(-20, 20);
+      enemy.body.velocity.x = velocityX;
+      enemy.body.velocity.y = velocityY;
       enemy.body.immovable = true;
     }
   },
-  getRandomOutsideBoundsSpawnPoints() {
-    const sideToSpawnOn = this.game.rnd.integerInRange(0, 3);
+  getInitialSpawnData() {
+    const spawnSide = this.game.rnd.integerInRange(0, 3);
     const offset = this.game.rnd.integerInRange(50, 100);
 
     let x = this.game.world.randomX;
     let y = this.game.world.randomY;
+    let velocityX = this.game.rnd.integerInRange(-20, 20);
+    let velocityY = this.game.rnd.integerInRange(-20, 20);
 
-    switch (sideToSpawnOn) {
+    switch (spawnSide) {
       case 0:
         y = 0 - offset;
+        velocityY = this.game.rnd.integerInRange(1, 20);
         break;
       case 1:
         x = this.game.world.bounds.width + offset;
+        velocityX = this.game.rnd.integerInRange(-20, -1);
         break;
       case 2:
         y = this.game.world.bounds.height + offset;
+        velocityY = this.game.rnd.integerInRange(-20, -1);
         break;
       case 3:
       default:
         x = 0 - offset;
+        velocityX = this.game.rnd.integerInRange(1, 20);
         break;
     }
 
-    return { x, y };
+    return {
+      x,
+      y,
+      velocityX,
+      velocityY,
+    };
   },
   hitEnemy() {
     //play explosion sound
