@@ -47,6 +47,10 @@ export default {
     this.killAndRecycleOutOfBoundEnemies();
 
     if (this.player.growthCharges.length) this.grow();
+
+    // add food on a timer
+    const foodAlive = this.food.children.filter(food => food.alive);
+    if (foodAlive.length < 3) this.addFood();
   },
 
   // handle end state by restarting to menu
@@ -78,12 +82,12 @@ export default {
       } = this.getInitialSpawnData();
 
       enemy = this.enemies.create(x, y, 'enemy');
-      enemy.scale.setTo(this.game.rnd.integerInRange(1, 4) / 10);
+      enemy.scale.setTo(this.game.rnd.integerInRange(2, 10) / 10);
 
       // physics properties
       enemy.body.velocity.x = velocityX;
       enemy.body.velocity.y = velocityY;
-      enemy.body.immovable = true;
+      enemy.anchor.setTo(0.5);
     }
   },
   getInitialSpawnData() {
@@ -129,6 +133,7 @@ export default {
     if (isPlayerLargerThanEnemy) {
       this.player.growthCharges.push(1);
       enemy.kill();
+      this.updateScore();
     } else {
       //play explosion sound
       this.explosionSound.play();
@@ -170,13 +175,14 @@ export default {
     this.food.physicsBodyType = Phaser.Physics.ARCADE;
 
     //phaser's random number generator
-    const numFood = this.game.rnd.integerInRange(5, 10);
+    const numFood = this.game.rnd.integerInRange(1, 5);
     let food;
 
     for (let i = 0; i < numFood; i += 1) {
       //add sprite
       food = this.food.create(this.game.world.randomX, this.game.world.randomY, 'food');
       food.scale.setTo(0.5);
+      food.anchor.setTo(0.5);
     }
   },
 
@@ -184,13 +190,28 @@ export default {
     //play collect sound
     this.collectSound.play();
 
-    //update score
-    this.playerScore += 1;
-    this.scoreLabel.text = this.playerScore;
+    this.updateScore();
 
     //remove sprite
     food.kill();
     this.player.growthCharges.push(1);
+    console.log(this.food);
+    console.log(this.food.children.length);
+  },
+
+  addFood() {
+  console.log(this.food.children);
+    const deadFood = this.food.children.find(food => !food.alive);
+
+    if (deadFood) {
+      deadFood.alive = true;
+      console.log('dead');
+    } else {
+      console.log('add');
+      const food = this.food.create(this.game.world.randomX, this.game.world.randomY, 'food');
+      food.scale.setTo(0.5);
+      food.anchor.setTo(0.5);
+    }
   },
 
   grow() {
@@ -200,6 +221,11 @@ export default {
     });
 
     this.player.growthCharges = [];
+  },
+
+  updateScore() {
+    this.playerScore += 1;
+    this.scoreLabel.text = this.playerScore;
   },
 
   // score
