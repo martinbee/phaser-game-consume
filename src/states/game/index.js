@@ -65,7 +65,7 @@ export default {
 
     // phaser's random number generator
     //const numEnemies = this.game.rnd.integerInRange(10, 20);
-    const numEnemies = 1;
+    const numEnemies = 5;
     let enemy;
 
     for (let i = 0; i < numEnemies; i += 1) {
@@ -122,22 +122,30 @@ export default {
       velocityY,
     };
   },
-  hitEnemy() {
-    //play explosion sound
-    this.explosionSound.play();
+  hitEnemy(player, enemy) {
+    // this works as our sprites are squares
+    const isPlayerLargerThanEnemy = player.width > enemy.width;
 
-    //player explosion will be added here
-    const emitter = this.game.add.emitter(this.player.x, this.player.y, 100);
-    emitter.makeParticles('playerParticle');
-    emitter.minParticleSpeed.setTo(-200, -200);
-    emitter.maxParticleSpeed.setTo(200, 200);
-    emitter.gravity = 0;
-    emitter.start(true, 1000, null, 100);
+    if (isPlayerLargerThanEnemy) {
+      this.player.growthCharges.push(1);
+      enemy.kill();
+    } else {
+      //play explosion sound
+      this.explosionSound.play();
 
-    this.player.kill();
+      //player explosion will be added here
+      const emitter = this.game.add.emitter(this.player.x, this.player.y, 100);
+      emitter.makeParticles('playerParticle');
+      emitter.minParticleSpeed.setTo(-200, -200);
+      emitter.maxParticleSpeed.setTo(200, 200);
+      emitter.gravity = 0;
+      emitter.start(true, 1000, null, 100);
 
-    // end game after a brief period
-    this.game.time.events.add(800, this.gameOver, this);
+      this.player.kill();
+
+      // end game after a brief period
+      this.game.time.events.add(800, this.gameOver, this);
+    }
   },
   killAndRecycleOutOfBoundEnemies() {
     //this.enemies.children.forEach((child) => {
@@ -186,9 +194,9 @@ export default {
   },
 
   grow() {
-    this.player.growthCharges.forEach((charge) => {
-      // grow player
-      console.log('grow');
+    this.player.growthCharges.forEach(() => {
+      const { x, y } = this.player.scale;
+      this.player.scale.setTo(x + 0.05, y + 0.05);
     });
 
     this.player.growthCharges = [];
