@@ -1,6 +1,13 @@
 // Game State: the actual game where the FUN takes place.
 import Phaser from 'phaser';
 
+// Ideas:
+//
+// move enemies towards player
+// change sprites
+// timer on food
+// adjust enemy size based on player size (aka always a bigger fish)
+// end game when player is half of screen size
 export default {
   create() {
     // player
