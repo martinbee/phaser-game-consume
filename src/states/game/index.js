@@ -49,8 +49,8 @@ export default {
     if (this.player.growthCharges.length) this.grow();
 
     // add food on a timer
-    const foodAlive = this.food.children.filter(food => food.alive);
-    if (foodAlive.length < 3) this.addFood();
+    //const foodAlive = this.food.children.filter(food => food.alive);
+    if (this.food.countLiving() < 1) this.addFood();
   },
 
   // handle end state by restarting to menu
@@ -195,23 +195,17 @@ export default {
     //remove sprite
     food.kill();
     this.player.growthCharges.push(1);
-    console.log(this.food);
-    console.log(this.food.children.length);
   },
 
   addFood() {
-  console.log(this.food.children);
-    const deadFood = this.food.children.find(food => !food.alive);
+    const foodReviveProps = {
+      position: {
+        x: this.game.world.randomX,
+        y: this.game.world.randomY,
+      },
+    };
 
-    if (deadFood) {
-      deadFood.alive = true;
-      console.log('dead');
-    } else {
-      console.log('add');
-      const food = this.food.create(this.game.world.randomX, this.game.world.randomY, 'food');
-      food.scale.setTo(0.5);
-      food.anchor.setTo(0.5);
-    }
+    this.recycleGroupMember(this.food, foodReviveProps);
   },
 
   grow() {
@@ -221,6 +215,22 @@ export default {
     });
 
     this.player.growthCharges = [];
+  },
+
+  recycleGroupMember(group, reviveProps) {
+    // Recycle using getFirstExists(false)
+    // Notice that this method will not create new objects if there's no one
+    // available, and it won't change size of this group.
+    const member = group.getFirstExists(false);
+
+    if (member) {
+      member.revive();
+
+      // set passed in reviveProps on recycled member (i.e. position, velocity, etc.)
+      Object.keys(reviveProps).forEach((key) => {
+        member[key] = reviveProps[key];
+      });
+    }
   },
 
   updateScore() {
