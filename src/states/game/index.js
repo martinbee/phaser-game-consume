@@ -44,13 +44,14 @@ export default {
 
     //overlapping between player and food (overlap does not affect player physics)
     this.game.physics.arcade.overlap(this.player, this.food, this.collect, null, this);
-    this.killAndRecycleOutOfBoundEnemies();
+    this.killOutOfBoundEnemies();
 
     if (this.player.growthCharges.length) this.grow();
 
     // add food on a timer
     //const foodAlive = this.food.children.filter(food => food.alive);
     if (this.food.countLiving() < 1) this.addFood();
+    if (this.enemies.countLiving() < 5) this.addEnemy();
   },
 
   // handle end state by restarting to menu
@@ -152,18 +153,30 @@ export default {
       this.game.time.events.add(800, this.gameOver, this);
     }
   },
-  killAndRecycleOutOfBoundEnemies() {
-    //this.enemies.children.forEach((child) => {
-      //const { x, y } = child.position;
+  killOutOfBoundEnemies() {
+    this.enemies.children.forEach((child) => {
+      const { x, y } = child.position;
 
-      //const isOutOfXBounds = (x > this.game.world.width + 101) || x < -101;
-      //const isOutOfYBounds = (y > this.game.world.height + 101) || y < -101;
-      //const isOutOfBounds = isOutOfXBounds || isOutOfYBounds;
+      const isOutOfXBounds = (x > this.game.world.width + 101) || x < -101;
+      const isOutOfYBounds = (y > this.game.world.height + 101) || y < -101;
+      const isOutOfBounds = isOutOfXBounds || isOutOfYBounds;
 
-      //if (isOutOfBounds) {
-        //child.kill();
-      //}
-    //});
+      if (isOutOfBounds) {
+        child.kill();
+      }
+    });
+  },
+  addEnemy() {
+    const {
+      x,
+      y,
+      velocityX,
+      velocityY,
+    } = this.getInitialSpawnData();
+    const enemyPosition = { x, y };
+    const enemyVelocity = { x: velocityX, y: velocityY };
+
+    this.recycleGroupMember(this.enemies, enemyPosition, enemyVelocity);
   },
 
   // food
@@ -198,14 +211,12 @@ export default {
   },
 
   addFood() {
-    const foodReviveProps = {
-      position: {
-        x: this.game.world.randomX,
-        y: this.game.world.randomY,
-      },
+    const foodPosition = {
+      x: this.game.world.randomX,
+      y: this.game.world.randomY,
     };
 
-    this.recycleGroupMember(this.food, foodReviveProps);
+    this.recycleGroupMember(this.food, foodPosition);
   },
 
   grow() {
@@ -217,7 +228,7 @@ export default {
     this.player.growthCharges = [];
   },
 
-  recycleGroupMember(group, reviveProps) {
+  recycleGroupMember(group, position, velocity) {
     // Recycle using getFirstExists(false)
     // Notice that this method will not create new objects if there's no one
     // available, and it won't change size of this group.
@@ -226,10 +237,17 @@ export default {
     if (member) {
       member.revive();
 
-      // set passed in reviveProps on recycled member (i.e. position, velocity, etc.)
-      Object.keys(reviveProps).forEach((key) => {
-        member[key] = reviveProps[key];
-      });
+      // I do this logic instead of direct assignment because of the type prop
+      if (position) {
+        member.position.x = position.x;
+        member.position.y = position.y;
+      }
+
+      // I do this logic instead of direct assignment because of the type prop
+      if (velocity) {
+        member.body.velocity.x = velocity.x;
+        member.body.velocity.y = velocity.y;
+      }
     }
   },
 
